@@ -7,6 +7,7 @@ require (
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/near/borsh-go v0.3.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/shabbyrobe/go-num v0.0.0-20220218224608-bad1c8f534d7 // indirect
 	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220722155223-a9213eeb770e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect

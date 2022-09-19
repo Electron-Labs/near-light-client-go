@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/ed25519"
 	borsh "github.com/near/borsh-go"
+	"reflect"
 	"testing"
 )
 
@@ -64,5 +65,38 @@ func TestSignatureVerification(t *testing.T) {
 
 	if !s.Verify(msg, p) {
 		t.Errorf("Failed to verify the signature")
+	}
+}
+
+func TestBlockHeaderInnerLiteViewFinalSerde(t *testing.T) {
+	c := &CryptoHash{}
+	data := []byte("hello world\n")
+	c.HashBytes(data)
+
+	bf := &BlockHeaderInnerLiteViewFinal{
+		Height:          31,
+		EpochId:         *c,
+		NextEpochId:     *c,
+		PrevStateRoot:   *c,
+		OutcomeRoot:     *c,
+		Timestamp:       4,
+		NextBpHash:      *c,
+		BlockMerkleRoot: *c,
+	}
+
+	der_bf := &BlockHeaderInnerLiteViewFinal{}
+
+	ser_bf, err := bf.serialize()
+	if err != nil {
+		t.Errorf("Failed to serialize bf: %s", err)
+	}
+
+	err = der_bf.deserialize(ser_bf)
+	if err != nil {
+		t.Errorf("Failed to deserialize bf: %s", err)
+	}
+
+	if !reflect.DeepEqual(bf, der_bf) {
+		t.Errorf("bf: %v\nder_bf: %v", bf, der_bf)
 	}
 }
