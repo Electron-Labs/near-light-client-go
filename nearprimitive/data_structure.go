@@ -97,6 +97,24 @@ type MerklePathItem struct {
 	Direction Direction
 }
 
+func (mp MerklePathItem) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(mp)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (mp *MerklePathItem) deserialize(data []byte) error {
+	err := borsh.Deserialize(mp, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
+}
+
 type MerklePath []MerklePathItem
 
 type BlockHeaderInnerLiteView struct {
@@ -109,6 +127,24 @@ type BlockHeaderInnerLiteView struct {
 	TimestampNanosec uint64
 	NextBpHash       CryptoHash
 	BlockMerkleRoot  CryptoHash
+}
+
+func (bh BlockHeaderInnerLiteView) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(bh)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (bh *BlockHeaderInnerLiteView) deserialize(data []byte) error {
+	err := borsh.Deserialize(bh, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
 }
 
 func (b BlockHeaderInnerLiteView) ToBlockHeaderInnerLiteViewFinal() BlockHeaderInnerLiteViewFinal {
@@ -130,6 +166,24 @@ type LightClientBlockLiteView struct {
 	InnerLite     BlockHeaderInnerLiteView
 }
 
+func (lc LightClientBlockLiteView) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(lc)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (lc *LightClientBlockLiteView) deserialize(data []byte) error {
+	err := borsh.Deserialize(lc, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
+}
+
 type ValidatorStakeViewVersion uint
 
 const (
@@ -147,6 +201,24 @@ type ValidatorStakeView struct {
 	V1      ValidatorStakeViewV1
 }
 
+func (vs ValidatorStakeView) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(vs)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (vs *ValidatorStakeView) deserialize(data []byte) error {
+	err := borsh.Deserialize(vs, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
+}
+
 func (v *ValidatorStakeView) GetValidatorStake() (ValidatorStakeViewV1, error) {
 	if v.Version == V1 {
 		return v.V1, nil
@@ -162,6 +234,24 @@ type LightClientBlockView struct {
 	InnerRestHash      CryptoHash
 	NextBps            []ValidatorStakeView
 	ApprovalsAfterNext []Signature
+}
+
+func (lb LightClientBlockView) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(lb)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (lb *LightClientBlockView) deserialize(data []byte) error {
+	err := borsh.Deserialize(lb, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
 }
 
 type BlockHeaderInnerLiteViewFinal struct {
@@ -202,11 +292,47 @@ type ExecutionOutcomeView struct {
 	Status      []uint8
 }
 
+func (eo ExecutionOutcomeView) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(eo)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (eo *ExecutionOutcomeView) deserialize(data []byte) error {
+	err := borsh.Deserialize(eo, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
+}
+
 type OutcomeProof struct {
 	Proof     []MerklePathItem
 	BlockHash CryptoHash
 	Id        CryptoHash
 	Outcome   ExecutionOutcomeView
+}
+
+func (op OutcomeProof) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(op)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (op *OutcomeProof) deserialize(data []byte) error {
+	err := borsh.Deserialize(op, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
 }
 
 type ApprovalInnerType uint
@@ -220,6 +346,24 @@ type ApprovalInner struct {
 	InnerType   ApprovalInnerType
 	Endorsement CryptoHash
 	Skip        BlockHeight
+}
+
+func (ai ApprovalInner) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(ai)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (ai *ApprovalInner) deserialize(data []byte) error {
+	err := borsh.Deserialize(ai, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
 }
 
 type HostFunction interface {
