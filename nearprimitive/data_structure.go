@@ -42,22 +42,20 @@ func (c *CryptoHash) HashBorsh(borshSerializedArray []byte) error {
 	return nil
 }
 
-type PublicKey struct {
-	data [32]byte
-}
+type PublicKey [32]byte
 
 func (p *PublicKey) TryFromRaw(data []byte) error {
 	if len(data) != 32 {
 		return fmt.Errorf("Ill-formed public key, wrong size: %d", len(data))
 	}
 
-	copy(p.data[:], data[:32])
+	copy(p[:], data[:32])
 
 	return nil
 }
 
 func (p *PublicKey) GetEd25519PubKey() ed25519.PublicKey {
-	return p.data[:]
+	return p[:]
 }
 
 type Signature [64]byte
