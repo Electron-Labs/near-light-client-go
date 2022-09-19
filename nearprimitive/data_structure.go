@@ -93,41 +93,41 @@ const (
 )
 
 type MerklePathItem struct {
-	hash      MerkleHash
-	direction Direction
+	Hash      MerkleHash
+	Direction Direction
 }
 
 type MerklePath []MerklePathItem
 
 type BlockHeaderInnerLiteView struct {
-	height            BlockHeight
-	epoch_id          CryptoHash
-	next_epoch_id     CryptoHash
-	prev_state_root   CryptoHash
-	outcome_root      CryptoHash
-	timestamp         uint64
-	timestamp_nanosec uint64
-	next_bp_hash      CryptoHash
-	block_merkle_root CryptoHash
+	Height           BlockHeight
+	EpochId          CryptoHash
+	NextEpochId      CryptoHash
+	PrevStateRoot    CryptoHash
+	OutcomeRoot      CryptoHash
+	Timestamp        uint64
+	TimestampNanosec uint64
+	NextBpHash       CryptoHash
+	BlockMerkleRoot  CryptoHash
 }
 
 func (b BlockHeaderInnerLiteView) ToBlockHeaderInnerLiteViewFinal() BlockHeaderInnerLiteViewFinal {
 	return BlockHeaderInnerLiteViewFinal{
-		Height:          b.height,
-		EpochId:         b.epoch_id,
-		NextEpochId:     b.next_epoch_id,
-		PrevStateRoot:   b.prev_state_root,
-		OutcomeRoot:     b.outcome_root,
-		Timestamp:       b.timestamp,
-		NextBpHash:      b.next_bp_hash,
-		BlockMerkleRoot: b.block_merkle_root,
+		Height:          b.Height,
+		EpochId:         b.EpochId,
+		NextEpochId:     b.NextEpochId,
+		PrevStateRoot:   b.PrevStateRoot,
+		OutcomeRoot:     b.OutcomeRoot,
+		Timestamp:       b.Timestamp,
+		NextBpHash:      b.NextBpHash,
+		BlockMerkleRoot: b.BlockMerkleRoot,
 	}
 }
 
 type LightClientBlockLiteView struct {
-	prev_block_hash CryptoHash
-	inner_rest_hash CryptoHash
-	inner_lite      BlockHeaderInnerLiteView
+	PrevBlockHash CryptoHash
+	InnerRestHash CryptoHash
+	InnerLite     BlockHeaderInnerLiteView
 }
 
 type ValidatorStakeViewVersion uint
@@ -137,23 +137,23 @@ const (
 )
 
 type ValidatorStakeViewV1 struct {
-	accountId  AccountId
-	public_key PublicKey
-	stake      Balance
+	AccountId AccountId
+	PublicKey PublicKey
+	Stake     Balance
 }
 
 type ValidatorStakeView struct {
-	version ValidatorStakeViewVersion
-	v1      ValidatorStakeViewV1
+	Version ValidatorStakeViewVersion
+	V1      ValidatorStakeViewV1
 }
 
 type LightClientBlockView struct {
-	prev_block_hash       CryptoHash
-	next_block_inner_hash CryptoHash
-	inner_lite            BlockHeaderInnerLiteView
-	inner_rest_hash       CryptoHash
-	next_bps              []ValidatorStakeView
-	approvals_after_next  []Signature
+	PrevBlockHash      CryptoHash
+	NextBlockInnerHash CryptoHash
+	InnerLite          BlockHeaderInnerLiteView
+	InnerRestHash      CryptoHash
+	NextBps            []ValidatorStakeView
+	ApprovalsAfterNext []Signature
 }
 
 type BlockHeaderInnerLiteViewFinal struct {
@@ -186,19 +186,19 @@ func (bf *BlockHeaderInnerLiteViewFinal) deserialize(data []byte) error {
 }
 
 type ExecutionOutcomeView struct {
-	logs         []string
-	receipt_ids  []CryptoHash
-	gas_burnt    Gas
-	tokens_burnt num.U128
-	executor_id  AccountId
-	status       []uint8
+	Logs        []string
+	ReceiptIds  []CryptoHash
+	GasBurnt    Gas
+	TokensBurnt num.U128
+	ExecutorId  AccountId
+	Status      []uint8
 }
 
 type OutcomeProof struct {
-	proof      []MerklePathItem
-	block_hash CryptoHash
-	id         CryptoHash
-	outcome    ExecutionOutcomeView
+	Proof     []MerklePathItem
+	BlockHash CryptoHash
+	Id        CryptoHash
+	Outcome   ExecutionOutcomeView
 }
 
 type ApprovalInnerType uint
@@ -209,9 +209,9 @@ const (
 )
 
 type ApprovalInner struct {
-	inner_type  ApprovalInnerType
-	endorsement CryptoHash
-	skip        BlockHeight
+	InnerType   ApprovalInnerType
+	Endorsement CryptoHash
+	Skip        BlockHeight
 }
 
 type HostFunction interface {
