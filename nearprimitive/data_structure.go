@@ -147,6 +147,14 @@ type ValidatorStakeView struct {
 	V1      ValidatorStakeViewV1
 }
 
+func (v *ValidatorStakeView) GetValidatorStake() (ValidatorStakeViewV1, error) {
+	if v.Version == V1 {
+		return v.V1, nil
+	}
+
+	return v.V1, fmt.Errorf("Invalid version %v", v.Version)
+}
+
 type LightClientBlockView struct {
 	PrevBlockHash      CryptoHash
 	NextBlockInnerHash CryptoHash
@@ -219,6 +227,19 @@ type HostFunction interface {
 	verify(sig Signature, data []byte, public_key PublicKey) bool
 }
 
-//func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) CryptoHash {
-//
-//}
+func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) (CryptoHash, error) {
+	inner_lite_ser, err := lb.InnerLite.ToBlockHeaderInnerLiteViewFinal().serialize()
+	if err != nil {
+		return CryptoHash{}, fmt.Errorf("Failed to serialize inner lite: %s", err)
+	}
+
+	inner_lite_hash := h.sha256(inner_lite_ser)
+	c := &CryptoHash{}
+
+	appended_hashes := append(inner_lite_hash[:], lb.InnerRestHash.AsBytes()...)
+	appended_hashes = append(appended_hashes, lb.PrevBlockHash.AsBytes()...)
+
+	c.HashBytes(appended_hashes)
+
+	return *c, nil
+}
