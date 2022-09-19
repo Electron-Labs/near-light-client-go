@@ -9,17 +9,15 @@ import (
 	num "github.com/shabbyrobe/go-num"
 )
 
-type CryptoHash struct {
-	byteArray [32]byte
-}
+type CryptoHash [32]byte
 
 func (c *CryptoHash) HashBytes(byteArray []byte) {
 	digest := sha256.Sum256(byteArray[:])
-	c.byteArray = digest
+	copy(c[:], digest[:32])
 }
 
 func (c *CryptoHash) AsBytes() []byte {
-	return c.byteArray[:]
+	return c[:]
 }
 
 func (c *CryptoHash) TryFromRaw(byteArray []byte) error {
@@ -27,7 +25,7 @@ func (c *CryptoHash) TryFromRaw(byteArray []byte) error {
 		return fmt.Errorf("Ill-formed byte array, size: %d", len(byteArray))
 	}
 
-	copy(c.byteArray[:], byteArray[:32])
+	copy(c[:], byteArray[:32])
 
 	return nil
 }
@@ -115,6 +113,19 @@ type BlockHeaderInnerLiteView struct {
 	block_merkle_root CryptoHash
 }
 
+func (b BlockHeaderInnerLiteView) ToBlockHeaderInnerLiteViewFinal() BlockHeaderInnerLiteViewFinal {
+	return BlockHeaderInnerLiteViewFinal{
+		Height:          b.height,
+		EpochId:         b.epoch_id,
+		NextEpochId:     b.next_epoch_id,
+		PrevStateRoot:   b.prev_state_root,
+		OutcomeRoot:     b.outcome_root,
+		Timestamp:       b.timestamp,
+		NextBpHash:      b.next_bp_hash,
+		BlockMerkleRoot: b.block_merkle_root,
+	}
+}
+
 type LightClientBlockLiteView struct {
 	prev_block_hash CryptoHash
 	inner_rest_hash CryptoHash
@@ -148,14 +159,32 @@ type LightClientBlockView struct {
 }
 
 type BlockHeaderInnerLiteViewFinal struct {
-	height            BlockHeight
-	epoch_id          CryptoHash
-	next_epoch_id     CryptoHash
-	prev_state_root   CryptoHash
-	outcome_root      CryptoHash
-	timestamp         uint64
-	next_bp_hash      CryptoHash
-	block_merkle_root CryptoHash
+	Height          BlockHeight
+	EpochId         CryptoHash
+	NextEpochId     CryptoHash
+	PrevStateRoot   CryptoHash
+	OutcomeRoot     CryptoHash
+	Timestamp       uint64
+	NextBpHash      CryptoHash
+	BlockMerkleRoot CryptoHash
+}
+
+func (bf BlockHeaderInnerLiteViewFinal) serialize() ([]byte, error) {
+	data, err := borsh.Serialize(bf)
+	if err != nil {
+		return data, fmt.Errorf("Failed to serialize: %s", err)
+	}
+
+	return data, nil
+}
+
+func (bf *BlockHeaderInnerLiteViewFinal) deserialize(data []byte) error {
+	err := borsh.Deserialize(bf, data)
+	if err != nil {
+		return fmt.Errorf("Failed to deserialize: %s", err)
+	}
+
+	return nil
 }
 
 type ExecutionOutcomeView struct {
@@ -186,3 +215,12 @@ type ApprovalInner struct {
 	endorsement CryptoHash
 	skip        BlockHeight
 }
+
+type HostFunction interface {
+	sha256(data []byte) [32]byte
+	verify(sig Signature, data []byte, public_key PublicKey) bool
+}
+
+//func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) CryptoHash {
+//
+//}
