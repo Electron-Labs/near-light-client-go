@@ -367,8 +367,8 @@ func (ai *ApprovalInner) deserialize(data []byte) error {
 }
 
 type HostFunction interface {
-	sha256(data []byte) [32]byte
-	verify(sig Signature, data []byte, public_key PublicKey) bool
+	Sha256(data []byte) [32]byte
+	Verify(sig Signature, data []byte, public_key PublicKey) bool
 }
 
 func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) (CryptoHash, error) {
@@ -377,7 +377,7 @@ func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) (CryptoHash, er
 		return CryptoHash{}, fmt.Errorf("Failed to serialize inner lite: %s", err)
 	}
 
-	inner_lite_hash := h.sha256(inner_lite_ser)
+	inner_lite_hash := h.Sha256(inner_lite_ser)
 	c := &CryptoHash{}
 
 	appended_hashes := append(inner_lite_hash[:], lb.InnerRestHash.AsBytes()...)
