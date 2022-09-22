@@ -80,7 +80,6 @@ func (s *Signature) Verify(data []byte, public_key *PublicKey) bool {
 
 type BlockHeight uint64
 type AccountId string
-type Balance num.U128
 type Gas uint64
 
 type MerkleHash CryptoHash
@@ -193,7 +192,7 @@ const (
 type ValidatorStakeViewV1 struct {
 	AccountId AccountId
 	PublicKey PublicKey
-	Stake     Balance
+	Stake     num.U128
 }
 
 type ValidatorStakeView struct {
