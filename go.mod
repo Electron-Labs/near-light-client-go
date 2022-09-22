@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/btcsuite/btcutil v1.0.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/near/borsh-go v0.3.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
