@@ -183,7 +183,7 @@ func (lc *LightClientBlockLiteView) deserialize(data []byte) error {
 	return nil
 }
 
-type ValidatorStakeViewVersion uint
+type ValidatorStakeViewVersion uint8
 
 const (
 	V1 ValidatorStakeViewVersion = iota
@@ -191,6 +191,8 @@ const (
 
 type ValidatorStakeViewV1 struct {
 	AccountId AccountId
+	// HACK to borsh serialize it properly
+	Dummy     uint8
 	PublicKey PublicKey
 	Stake     num.U128
 }
@@ -232,7 +234,7 @@ type LightClientBlockView struct {
 	InnerLite          BlockHeaderInnerLiteView
 	InnerRestHash      CryptoHash
 	NextBps            []ValidatorStakeView
-	ApprovalsAfterNext []Signature
+	ApprovalsAfterNext []*Signature
 }
 
 func (lb LightClientBlockView) serialize() ([]byte, error) {
@@ -334,7 +336,7 @@ func (op *OutcomeProof) deserialize(data []byte) error {
 	return nil
 }
 
-type ApprovalInnerType uint
+type ApprovalInnerType uint8
 
 const (
 	Endorsement ApprovalInnerType = iota
@@ -380,7 +382,8 @@ func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) (CryptoHash, er
 	c := &CryptoHash{}
 
 	appended_hashes := append(inner_lite_hash[:], lb.InnerRestHash.AsBytes()...)
-	appended_hashes = append(appended_hashes, lb.PrevBlockHash.AsBytes()...)
+	new_inner_hash := h.Sha256(appended_hashes[:])
+	appended_hashes = append(new_inner_hash[:], lb.PrevBlockHash.AsBytes()...)
 
 	c.HashBytes(appended_hashes)
 
