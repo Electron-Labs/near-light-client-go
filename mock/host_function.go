@@ -1,3 +1,5 @@
+// Copyright © 2022, Electron Labs
+
 package mock
 
 import (
