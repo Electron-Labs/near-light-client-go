@@ -12,7 +12,7 @@ import (
 	num "github.com/shabbyrobe/go-num"
 )
 
-func get_client_block_view(client_block_response string) (nearprimitive.LightClientBlockView, error) {
+func GetClientBlockView(client_block_response string) (nearprimitive.LightClientBlockView, error) {
 	var block_view NearLightClientBlockView
 
 	err := json.Unmarshal([]byte(client_block_response), &block_view)
