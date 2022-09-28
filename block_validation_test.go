@@ -1531,17 +1531,17 @@ func (d *DummyLiteClient) new_from_checkpoint(checkpoint_head nearprimitive.Ligh
 }
 
 func TestValidateLightBlock(t *testing.T) {
-	pre_epoch, err := get_client_block_view(CLIENT_RESPONSE_PREVIOUS_EPOCH)
+	pre_epoch, err := GetClientBlockView(CLIENT_RESPONSE_PREVIOUS_EPOCH)
 	if err != nil {
 		t.Errorf("Failed to parse prev client block: %s", err)
 	}
 
-	curr_epoch, err := get_client_block_view(CLIENT_BLOCK_RESPONSE)
+	curr_epoch, err := GetClientBlockView(CLIENT_BLOCK_RESPONSE)
 	if err != nil {
 		t.Errorf("Failed to parse current client block: %s", err)
 	}
 
-	next_epoch, err := get_client_block_view(CLIENT_BLOCK_RESPONSE_NEXT_BLOCK)
+	next_epoch, err := GetClientBlockView(CLIENT_BLOCK_RESPONSE_NEXT_BLOCK)
 	if err != nil {
 		t.Errorf("Failed to parse next client block: %s", err)
 	}
