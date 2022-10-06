@@ -3,6 +3,7 @@
 package light
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -45,6 +46,120 @@ type NearLightClientBlockView struct {
 	Jsonrpc string
 	Result  Result
 	Id      string
+}
+
+type BlockHeaderLite struct {
+	InnerLite     NearInnerLightView `json:"inner_lite"`
+	InnerRestHash string             `json:"inner_rest_hash"`
+	PrevBlockHash string             `json:"prev_block_hash"`
+}
+
+type MetaData struct {
+	GasProfile *string `json:"gas_profile"`
+	Version    uint64  `json:"version"`
+}
+type Status struct {
+	SuccessReceiptId string `json:"SuccessReceiptId"`
+}
+type Outcome struct {
+	ExecutorId  string   `json:"executor_id"`
+	GasBurnt    uint64   `json:"gas_burnt"`
+	Logs        []string `json:"logs"`
+	MetaData    MetaData `json:"metadata"`
+	ReceiptIds  []string `json:"receipt_ids"`
+	Status      Status   `json:"status"`
+	TokensBurnt string   `json:"tokens_burnt"`
+}
+type Proof []struct {
+	Direction string `json:"direction"`
+	Hash      string `json:"hash"`
+}
+type OutcomeProof struct {
+	BlockHash string  `json:"block_hash"`
+	Id        string  `json:"id"`
+	Outcome   Outcome `json:"outcome"`
+	Proof     Proof   `json:"proof"`
+}
+
+type ResultX struct {
+	BlockHeaderLite  BlockHeaderLite `json:"block_header_lite"`
+	BlockProof       Proof           `json:"block_proof"`
+	OutcomeProof     OutcomeProof    `json:"outcome_proof"`
+	OutcomeRootProof Proof           `json:"outcome_root_proof"`
+}
+type RpcResponse struct {
+	Id      string  `json:"id"`
+	Jsonrpc string  `json:"jsonrpc"`
+	Result  ResultX `json:"result"`
+}
+
+func GetProof(bp Proof) []nearprimitive.MerklePathItem {
+
+	merklePath := []nearprimitive.MerklePathItem{}
+	for i := 0; i < len(bp); i++ {
+		path_item_hash := &nearprimitive.CryptoHash{}
+		err := path_item_hash.TryFromRaw(base58.Decode(bp[i].Hash))
+		if err != nil {
+			fmt.Printf("Failed to decode hash to base58: %s", err)
+		}
+		if bp[i].Direction == "Right" {
+			merklePath = append(merklePath, nearprimitive.MerklePathItem{Hash: nearprimitive.MerkleHash(*path_item_hash), Direction: nearprimitive.Right})
+		} else {
+			merklePath = append(merklePath, nearprimitive.MerklePathItem{Hash: nearprimitive.MerkleHash(*path_item_hash), Direction: nearprimitive.Left})
+		}
+	}
+	return merklePath
+}
+
+func GetOutcomeProof(response string) (nearprimitive.OutcomeProof, []nearprimitive.MerklePathItem) {
+	bp := RpcResponse{}
+	err := json.Unmarshal([]byte(response), &bp)
+	if err != nil {
+		fmt.Printf("Failed to unmarshal RpcResponse: %s", err)
+	}
+	receipt_ids := []nearprimitive.CryptoHash{}
+	single_receipt := nearprimitive.CryptoHash{}
+	for i := 0; i < len(bp.Result.OutcomeProof.Outcome.ReceiptIds); i++ {
+		err = single_receipt.TryFromRaw(base58.Decode(bp.Result.OutcomeProof.Outcome.ReceiptIds[i]))
+		receipt_ids = append(receipt_ids, single_receipt)
+		// err = receipt_ids[i].TryFromRaw(base58.Decode(bp.Result.OutcomeProof.Outcome.ReceiptIds[i]))
+		if err != nil {
+			fmt.Printf("Failed to get receipt Id: %s", err)
+		}
+	}
+
+	token_burnt, _, _ := num.U128FromString(bp.Result.OutcomeProof.Outcome.TokensBurnt)
+
+	//know how to convert this
+	serialized_status := base58.Decode(bp.Result.OutcomeProof.Outcome.Status.SuccessReceiptId)
+	execution_outcome := nearprimitive.ExecutionOutcomeView{
+		Logs:        bp.Result.OutcomeProof.Outcome.Logs,
+		ReceiptIds:  receipt_ids,
+		GasBurnt:    nearprimitive.Gas(bp.Result.OutcomeProof.Outcome.GasBurnt),
+		TokensBurnt: token_burnt,
+		ExecutorId:  nearprimitive.AccountId(bp.Result.OutcomeProof.Outcome.ExecutorId),
+		Status:      serialized_status,
+	}
+	id := &nearprimitive.CryptoHash{}
+	err = id.TryFromRaw(base58.Decode(bp.Result.OutcomeProof.Id))
+	if err != nil {
+		fmt.Printf("Failed to decode Outcome Proof Id: %s", err)
+	}
+	block_hash := &nearprimitive.CryptoHash{}
+	err = block_hash.TryFromRaw(base58.Decode(bp.Result.OutcomeProof.BlockHash))
+	err = id.TryFromRaw(base58.Decode(bp.Result.OutcomeProof.Id))
+	if err != nil {
+		fmt.Printf("Failed to Decode block Hash: %s", err)
+	}
+
+	outcome_proof := nearprimitive.OutcomeProof{
+		Proof:     GetProof(bp.Result.OutcomeProof.Proof),
+		BlockHash: *block_hash,
+		Id:        *id,
+		Outcome:   execution_outcome,
+	}
+
+	return outcome_proof, GetProof(bp.Result.OutcomeRootProof)
 }
 
 func (n *NearLightClientBlockView) parse() nearprimitive.LightClientBlockView {
