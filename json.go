@@ -93,6 +93,7 @@ type RpcResponse struct {
 	Result  ResultX `json:"result"`
 }
 
+// GetProof will form Merkle path from Json response of merkle path
 func GetProof(bp Proof) []nearprimitive.MerklePathItem {
 
 	merklePath := []nearprimitive.MerklePathItem{}
@@ -111,6 +112,7 @@ func GetProof(bp Proof) []nearprimitive.MerklePathItem {
 	return merklePath
 }
 
+// GetOutcomeProof will give outcome proof and outcome root proof from Rpc json response from near node
 func GetOutcomeProof(response string) (nearprimitive.OutcomeProof, []nearprimitive.MerklePathItem) {
 	bp := RpcResponse{}
 	err := json.Unmarshal([]byte(response), &bp)
@@ -122,7 +124,6 @@ func GetOutcomeProof(response string) (nearprimitive.OutcomeProof, []nearprimiti
 	for i := 0; i < len(bp.Result.OutcomeProof.Outcome.ReceiptIds); i++ {
 		err = single_receipt.TryFromRaw(base58.Decode(bp.Result.OutcomeProof.Outcome.ReceiptIds[i]))
 		receipt_ids = append(receipt_ids, single_receipt)
-		// err = receipt_ids[i].TryFromRaw(base58.Decode(bp.Result.OutcomeProof.Outcome.ReceiptIds[i]))
 		if err != nil {
 			fmt.Printf("Failed to get receipt Id: %s", err)
 		}
@@ -130,7 +131,6 @@ func GetOutcomeProof(response string) (nearprimitive.OutcomeProof, []nearprimiti
 
 	token_burnt, _, _ := num.U128FromString(bp.Result.OutcomeProof.Outcome.TokensBurnt)
 
-	//know how to convert this
 	serialized_status := base58.Decode(bp.Result.OutcomeProof.Outcome.Status.SuccessReceiptId)
 	execution_outcome := nearprimitive.ExecutionOutcomeView{
 		Logs:        bp.Result.OutcomeProof.Outcome.Logs,
