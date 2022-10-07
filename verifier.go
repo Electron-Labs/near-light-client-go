@@ -3,6 +3,7 @@
 package light
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 
@@ -107,8 +108,10 @@ func ValidateTransaction(h nearprimitive.HostFunction, op nearprimitive.OutcomeP
 		return fmt.Errorf("Failed calculate block outcome root: %s", err)
 	}
 
-	if ebor != nearprimitive.CryptoHash(block_outcome_root) {
-		return fmt.Errorf("expected_block_outcome_root != block_outcome_root %v %v", ebor, block_outcome_root)
+	bor := nearprimitive.CryptoHash(block_outcome_root)
+
+	if !bytes.Equal(bor.AsBytes(), ebor.AsBytes()) {
+		return fmt.Errorf("expected_block_outcome_root != block_outcome_root %v %v", ebor, bor)
 	}
 	return nil
 }

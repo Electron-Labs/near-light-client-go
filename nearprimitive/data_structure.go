@@ -5,8 +5,11 @@ package nearprimitive
 import (
 	"crypto/ed25519"
 	"crypto/sha256"
+	"encoding/json"
+	"errors"
 	"fmt"
 
+	base58 "github.com/btcsuite/btcutil/base58"
 	borsh "github.com/near/borsh-go"
 	num "github.com/shabbyrobe/go-num"
 )
@@ -390,4 +393,79 @@ func (lb *LightClientBlockView) CurrentBlockHash(h HostFunction) (CryptoHash, er
 	c.HashBytes(appended_hashes)
 
 	return *c, nil
+}
+
+type Unknown struct{}
+
+type SuccessValue struct {
+	Inner string
+}
+
+type SuccessReceiptID struct {
+	Inner CryptoHash
+}
+
+type ExecutionStatusView struct {
+	Enum borsh.Enum `borsh_enum:"true"`
+	// The execution is pending or unknown.
+	Unknown Unknown
+	// The execution has failed.
+	Failure []byte
+	// The final action succeeded and returned some value or an empty vec encoded in base64.
+	SuccessValue SuccessValue
+	// The final action of the receipt returned a promise or the signed transaction was converted
+	// to a receipt. Contains the receipt_id of the generated receipt.
+	SuccessReceiptID SuccessReceiptID
+}
+
+func IntoExecutionStatusView(raw_status map[string]json.RawMessage) (ExecutionStatusView, error) {
+	var status ExecutionStatusView
+	const unknown = 0
+	const executionStatusView = 2
+	const successReceiptID = 3
+	for k, v := range raw_status {
+		switch k {
+		case "Uknonwn":
+			var s string
+			err := json.Unmarshal([]byte(v), &s)
+			if err != nil {
+				return status, err
+			}
+			status = ExecutionStatusView{
+				Enum:    unknown,
+				Unknown: Unknown{},
+			}
+		case "Failure":
+			fmt.Println("Unsupported failure transaction")
+			return status, errors.New("unsupported failure transaction")
+		case "SuccessValues":
+			var s string
+			err := json.Unmarshal([]byte(v), &s)
+			if err != nil {
+				return status, err
+			}
+			status = ExecutionStatusView{
+				Enum: executionStatusView,
+				SuccessValue: SuccessValue{
+					Inner: s,
+				},
+			}
+		case "SuccessReceiptID":
+			var s string
+			err := json.Unmarshal([]byte(v), &s)
+			if err != nil {
+				return status, err
+			}
+			cryptoHash := CryptoHash{}
+			cryptoHash.TryFromRaw(base58.Decode(s))
+			status = ExecutionStatusView{
+				Enum: successReceiptID,
+				SuccessReceiptID: SuccessReceiptID{
+					Inner: cryptoHash,
+				},
+			}
+		}
+	}
+
+	return status, nil
 }
