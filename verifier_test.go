@@ -108,7 +108,7 @@ const (
                                         "8hxkU4avDWFDCsZckig7oN2ypnYvLyb1qmZ3SA1t8iZK"
                                 ],
                                 "status": {
-                                        "SuccessReceiptID": "8hxkU4avDWFDCsZckig7oN2ypnYvLyb1qmZ3SA1t8iZK"
+                                        "SuccessReceiptId": "8hxkU4avDWFDCsZckig7oN2ypnYvLyb1qmZ3SA1t8iZK"
                                 },
                                 "tokens_burnt": "242839501800800000000"
                         },
