@@ -267,7 +267,7 @@ func (n *NearLightClientBlockView) parse() nearprimitive.LightClientBlockView {
 		BlockMerkleRoot:  *block_merkle_root,
 		NextBpHash:       *next_bp_hash,
 		OutcomeRoot:      *outcome_root,
-		Timestamp:        n.Result.InnerLite.Timestamp,
+		Timestamp:        timestamp_nanosec,
 		TimestampNanosec: timestamp_nanosec,
 	}
 
