@@ -450,7 +450,7 @@ func IntoExecutionStatusView(raw_status map[string]json.RawMessage) (ExecutionSt
 					Inner: s,
 				},
 			}
-		case "SuccessReceiptID":
+		case "SuccessReceiptId":
 			var s string
 			err := json.Unmarshal([]byte(v), &s)
 			if err != nil {
