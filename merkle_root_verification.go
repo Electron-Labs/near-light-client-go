@@ -11,16 +11,20 @@ import (
 	"github.com/near/borsh-go"
 )
 
-func BlockMerkleRoot(lc_block string) nearprimitive.MerkleHash {
+func BlockMerkleRoot(lc_block string) nearprimitive.CryptoHash {
 	bp := NearLightClientBlockView{}
+	err := json.Unmarshal([]byte(lc_block), &bp)
+	if err != nil {
+		fmt.Printf("Failed to unmarshal RpcResponse: %s", err)
+	}
 
 	block_merkle_root := nearprimitive.CryptoHash{}
-	err := block_merkle_root.TryFromRaw(base58.Decode(bp.Result.InnerLite.BlockMerkleRoot))
+	err = block_merkle_root.TryFromRaw(base58.Decode(bp.Result.InnerLite.BlockMerkleRoot))
 	if err != nil {
 		fmt.Printf("Failed to decode: %s", err)
 	}
 
-	return nearprimitive.MerkleHash(block_merkle_root)
+	return block_merkle_root
 }
 func FromJsonToLCliteView(res string) (nearprimitive.LightClientBlockLiteView, []nearprimitive.MerklePathItem) {
 	bp := TxRpcResponse{}
