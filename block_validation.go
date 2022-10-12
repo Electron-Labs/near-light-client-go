@@ -20,7 +20,7 @@ func GetClientBlockView(client_block_response string) (nearprimitive.LightClient
 		return nearprimitive.LightClientBlockView{}, fmt.Errorf("Failed to parse client block: %s", err)
 	}
 
-	return block_view.parse(), nil
+	return block_view.Parse(), nil
 }
 
 func next_block_hash(h nearprimitive.HostFunction, next_block_inner_hash nearprimitive.CryptoHash, current_block_hash nearprimitive.CryptoHash) (nearprimitive.CryptoHash, error) {

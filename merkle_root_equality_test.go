@@ -623,7 +623,7 @@ func TestMerkleRootEquality(t *testing.T) {
 		t.Errorf("Failed to parse tx proof: %s", err)
 	}
 
-	tx_proof, err := tx_proof_json.parse()
+	tx_proof, err := tx_proof_json.Parse()
 	if err != nil {
 		t.Errorf("Failed to parse tx_proof: %s", err)
 	}
@@ -638,9 +638,9 @@ func TestMerkleRootEquality(t *testing.T) {
 	il_sha := h.Sha256(ser_il)
 	re := CurrentBlockHash(h, il_sha, tx_proof.BlockHeaderLite.InnerRestHash, tx_proof.BlockHeaderLite.PrevBlockHash)
 
-	nlc := nlc_json.parse()
+	nlc := nlc_json.Parse()
 
-	root, err := compute_root_from_path(h, tx_proof.BlockProof, nearprimitive.MerkleHash(re))
+	root, err := Compute_root_from_path(h, tx_proof.BlockProof, nearprimitive.MerkleHash(re))
 	if err != nil {
 		t.Errorf("Failed to compute root: %s", err)
 	}

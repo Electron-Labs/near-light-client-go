@@ -190,7 +190,7 @@ type NearTxResult struct {
 	OutcomeRootProof nearprimitive.MerklePath
 }
 
-func (tx TxResult) parse() (NearTxResult, error) {
+func (tx TxResult) Parse() (NearTxResult, error) {
 	near_tx_result := NearTxResult{}
 
 	lite_header, err := tx.BlockHeaderLite.parse()
@@ -408,7 +408,7 @@ func GetOutcomeProof(response string) (nearprimitive.OutcomeProof, []nearprimiti
 	return outcome_proof, GetProof(bp.Result.OutcomeRootProof), *expected_outcome_root
 }
 
-func (n *NearLightClientBlockView) parse() nearprimitive.LightClientBlockView {
+func (n *NearLightClientBlockView) Parse() nearprimitive.LightClientBlockView {
 	lb := nearprimitive.LightClientBlockView{}
 
 	// Parse the signatures

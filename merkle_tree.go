@@ -35,7 +35,7 @@ func combine_hash(h nearprimitive.HostFunction, hash1 nearprimitive.MerkleHash, 
 	return final_hash, nil
 }
 
-func compute_root_from_path(h nearprimitive.HostFunction, path []nearprimitive.MerklePathItem, item_hash nearprimitive.MerkleHash) (nearprimitive.MerkleHash, error) {
+func Compute_root_from_path(h nearprimitive.HostFunction, path []nearprimitive.MerklePathItem, item_hash nearprimitive.MerkleHash) (nearprimitive.MerkleHash, error) {
 	res := item_hash
 	var err error
 
