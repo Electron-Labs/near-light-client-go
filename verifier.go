@@ -91,7 +91,7 @@ func ValidateTransaction(h nearprimitive.HostFunction, op nearprimitive.OutcomeP
 		return fmt.Errorf("Failed to calculate execution outcome hash: %s", err)
 	}
 
-	shard_outcome_root, err := Compute_root_from_path(h, op.Proof, nearprimitive.MerkleHash(execution_outcome_hash))
+	shard_outcome_root, err := ComputeRootFromPath(h, op.Proof, nearprimitive.MerkleHash(execution_outcome_hash))
 	if err != nil {
 		return fmt.Errorf("Failed to compute root from path: %s", err)
 	}
@@ -103,7 +103,7 @@ func ValidateTransaction(h nearprimitive.HostFunction, op nearprimitive.OutcomeP
 
 	ser_shard_outcome_root_hash := h.Sha256(ser_shard_outcome_root)
 
-	block_outcome_root, err := Compute_root_from_path(h, orp, ser_shard_outcome_root_hash)
+	block_outcome_root, err := ComputeRootFromPath(h, orp, ser_shard_outcome_root_hash)
 	if err != nil {
 		return fmt.Errorf("Failed calculate block outcome root: %s", err)
 	}

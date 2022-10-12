@@ -40,7 +40,7 @@ func TestComputeFromPath(t *testing.T) {
 		t.Errorf("Failed to read path item hash: %s", err)
 	}
 
-	computed_block_outcome_root, err := Compute_root_from_path(mock.MockHostFunction{}, path, nearprimitive.MerkleHash(*item_hash))
+	computed_block_outcome_root, err := ComputeRootFromPath(mock.MockHostFunction{}, path, nearprimitive.MerkleHash(*item_hash))
 	if err != nil {
 		t.Errorf("Failed to compute outcome root: %s", err)
 	}

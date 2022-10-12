@@ -640,7 +640,7 @@ func TestMerkleRootEquality(t *testing.T) {
 
 	nlc := nlc_json.Parse()
 
-	root, err := Compute_root_from_path(h, tx_proof.BlockProof, nearprimitive.MerkleHash(re))
+	root, err := ComputeRootFromPath(h, tx_proof.BlockProof, nearprimitive.MerkleHash(re))
 	if err != nil {
 		t.Errorf("Failed to compute root: %s", err)
 	}
