@@ -1,13 +1,7 @@
 package light
 
 import (
-	"bytes"
-	"encoding/json"
 	"testing"
-
-	"github.com/electron-labs/near-light-client-go/mock"
-	"github.com/electron-labs/near-light-client-go/nearprimitive"
-	"github.com/near/borsh-go"
 )
 
 const (
@@ -611,41 +605,9 @@ const (
 	`
 )
 
-func TestMerkleRootEquality(t *testing.T) {
-	nlc_json := NearLightClientBlockView{}
-	err := json.Unmarshal([]byte(LIGHT_CLIENT_BLOCK), &nlc_json)
+func TestBlockMerkleRootVerification(t *testing.T) {
+	err := BlockMerkleRootVerification(LIGHT_CLIENT_BLOCK, EXECUTION_OUTCOME)
 	if err != nil {
-		t.Errorf("Failed to parse light client block: %s", err)
-	}
-
-	tx_proof_json, err := GetTxProof(EXECUTION_OUTCOME)
-	if err != nil {
-		t.Errorf("Failed to parse tx proof: %s", err)
-	}
-
-	tx_proof, err := tx_proof_json.parse()
-	if err != nil {
-		t.Errorf("Failed to parse tx_proof: %s", err)
-	}
-
-	ser_il, err := borsh.Serialize(tx_proof.BlockHeaderLite.InnerLite.ToBlockHeaderInnerLiteViewFinal())
-	if err != nil {
-		t.Errorf("Failed to serialize: %s", err)
-	}
-
-	h := mock.MockHostFunction{}
-
-	il_sha := h.Sha256(ser_il)
-	re := CurrentBlockHash(h, il_sha, tx_proof.BlockHeaderLite.InnerRestHash, tx_proof.BlockHeaderLite.PrevBlockHash)
-
-	nlc := nlc_json.parse()
-
-	root, err := compute_root_from_path(h, tx_proof.BlockProof, nearprimitive.MerkleHash(re))
-	if err != nil {
-		t.Errorf("Failed to compute root: %s", err)
-	}
-
-	if !bytes.Equal(nlc.InnerLite.BlockMerkleRoot[:], root[:]) {
-		t.Errorf("Failed to validate tx!")
+		t.Errorf("failed to verify merkle rooot:%s", err)
 	}
 }
