@@ -55,3 +55,11 @@ func compute_root_from_path(h nearprimitive.HostFunction, path []nearprimitive.M
 
 	return res, nil
 }
+
+func CurrentBlockHash(h nearprimitive.HostFunction, inner_lite_hash nearprimitive.CryptoHash, inner_rest_hash nearprimitive.CryptoHash, prev_block_hash nearprimitive.CryptoHash) nearprimitive.CryptoHash {
+	combine_hash := append(inner_lite_hash[:], inner_rest_hash.AsBytes()...)
+	sha_combine_hash := h.Sha256(combine_hash)
+	combine_hash = append(sha_combine_hash[:], prev_block_hash.AsBytes()...)
+	sha_combine_hash = h.Sha256(combine_hash)
+	return sha_combine_hash
+}
